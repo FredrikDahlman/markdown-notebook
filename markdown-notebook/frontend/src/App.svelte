@@ -221,6 +221,38 @@
   }
 
   let showDeleteConfirm = false;
+  let isEditingTitle = false;
+  let editedTitle = '';
+
+  function startEditTitle() {
+    if (!currentNote) return;
+    editedTitle = currentNote.title;
+    isEditingTitle = true;
+  }
+
+  async function saveTitle() {
+    if (!currentNote || !editedTitle.trim()) {
+      isEditingTitle = false;
+      return;
+    }
+    currentNote.title = editedTitle.trim();
+    await SaveNote(currentNote);
+    await loadNotes();
+    isEditingTitle = false;
+  }
+
+  function cancelEditTitle() {
+    isEditingTitle = false;
+    editedTitle = '';
+  }
+
+  function handleTitleKeydown(e) {
+    if (e.key === 'Enter') {
+      saveTitle();
+    } else if (e.key === 'Escape') {
+      cancelEditTitle();
+    }
+  }
 
   async function handleDeleteNote() {
     console.log('Delete clicked, currentNote:', currentNote);
@@ -341,7 +373,17 @@
     <div class="editor-pane" style="width: {splitPosition}%">
       <div class="pane-header">
         {#if currentNote}
-          <span>{currentNote.title}</span>
+          {#if isEditingTitle}
+            <input 
+              class="title-input" 
+              bind:value={editedTitle} 
+              on:blur={saveTitle}
+              on:keydown={handleTitleKeydown}
+              autofocus
+            />
+          {:else}
+            <span class="title-span" on:dblclick={startEditTitle}>{currentNote.title}</span>
+          {/if}
           <button class="delete-btn" on:click={() => handleDeleteNote()}>Delete</button>
         {:else}
           <span>Select a note</span>
@@ -542,6 +584,28 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .title-span {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  .title-span:hover {
+    background: #444;
+  }
+
+  .title-input {
+    background: #444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 13px;
+    font-weight: 600;
+    flex: 1;
+    margin-right: 8px;
   }
 
   .delete-btn {

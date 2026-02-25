@@ -140,7 +140,9 @@ func SaveNote(note Note) error {
 	note.Modified = time.Now().Format(time.RFC3339)
 
 	var content string
-	if len(note.Tags) > 0 || note.Created != "" {
+	hasFrontmatter := len(note.Tags) > 0 || note.Title != "" || note.Created != ""
+	
+	if hasFrontmatter {
 		fm := Frontmatter{
 			Title:    note.Title,
 			Tags:     note.Tags,
