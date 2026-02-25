@@ -1,6 +1,7 @@
 <script>
-  import { onMount } from 'svelte';
-  import { ListNotes, GetNote, SaveNote, CreateNote, DeleteNote, SearchNotes, GetAllTags, GetNotesByTag } from '../wailsjs/go/main/App.js';
+  import { onMount, onDestroy } from 'svelte';
+  import { ListNotes, GetNote, SaveNote, CreateNote, DeleteNote, SearchNotes, GetAllTags, GetNotesByTag, StartWatcher, StopWatcher } from '../wailsjs/go/main/App.js';
+  import { EventsOn } from '../wailsjs/runtime/runtime';
   import { EditorView, basicSetup } from 'codemirror';
   import { EditorState } from '@codemirror/state';
   import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
@@ -56,6 +57,25 @@
 
     await loadNotes();
     await loadTags();
+
+    try {
+      await StartWatcher();
+      EventsOn('file-changed', (filename) => {
+        console.log('File changed:', filename);
+        loadNotes();
+        loadTags();
+      });
+    } catch (e) {
+      console.log('Watcher not available:', e);
+    }
+  });
+
+  onDestroy(async () => {
+    try {
+      await StopWatcher();
+    } catch (e) {
+      // Ignore
+    }
   });
 
   async function loadNotes() {

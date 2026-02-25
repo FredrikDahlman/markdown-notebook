@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"path/filepath"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // App struct
@@ -58,4 +61,20 @@ func (a *App) GetAllTags() (map[string]int, error) {
 
 func (a *App) GetNotesByTag(tag string) ([]Note, error) {
 	return GetNotesByTag(tag)
+}
+
+func (a *App) StartWatcher() error {
+	dir := GetNotesDir()
+	return StartFileWatcher(dir, func(filename string) {
+		if a.ctx != nil {
+			runtime.EventsEmit(a.ctx, "file-changed", filepath.Base(filename))
+		}
+	})
+}
+
+func (a *App) StopWatcher() {
+	if fileWatcher != nil {
+		fileWatcher.Stop()
+		fileWatcher = nil
+	}
 }

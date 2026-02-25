@@ -24,8 +24,8 @@
 - [x] 3.1 Implement GetAllTags() - extract unique tags from all notes
 - [x] 3.2 Implement GetNotesByTag(tag) - filter notes by tag
 - [x] 3.3 Implement SearchNotes(query) - substring search in filenames and frontmatter
-- [ ] 3.4 Set up fsnotify file watcher for notes directory
-- [ ] 3.5 Implement event bus for file changes (notify frontend)
+- [x] 3.4 Set up fsnotify file watcher for notes directory
+- [x] 3.5 Implement event bus for file changes (notify frontend)
 
 ## 4. Frontend - Layout & Components
 
@@ -48,7 +48,7 @@
 
 - [x] 6.1 Integrate markdown-it for markdown rendering
 - [x] 6.2 Integrate Shiki for code block syntax highlighting
-- [ ] 6.3 Implement scroll sync between editor and preview
+- [x] 6.3 Implement scroll sync between editor and preview
 - [x] 6.4 Style preview to match rendered output
 
 ## 7. Frontend - State & Integration
@@ -56,8 +56,8 @@
 - [x] 7.1 Create Wails bindings for Go backend methods
 - [x] 7.2 Implement frontend state management (current note, notes list, tags)
 - [x] 7.3 Implement auto-save with 500ms debounce
-- [ ] 7.4 Wire up file watcher events to refresh note list
-- [ ] 7.5 Implement external file change detection (prompt user)
+- [x] 7.4 Wire up file watcher events to refresh note list
+- [x] 7.5 Implement external file change detection (prompt user)
 
 ## 8. Polish & Features
 
@@ -66,14 +66,14 @@
 - [x] 8.3 Sort notes by last modified (newest first)
 - [x] 8.4 Implement tag filtering (click tag to filter)
 - [x] 8.5 Implement search results display
-- [ ] 8.6 Add macOS menu bar integration
-- [ ] 8.7 Handle window close/save prompts
+- [x] 8.6 Add macOS menu bar integration
+- [x] 8.7 Handle window close/save prompts
 
 ## 9. Testing & Build
 
-- [ ] 9.1 Test on macOS with sample notes
-- [ ] 9.2 Test file watcher with external edits
-- [ ] 9.3 Test search functionality
-- [ ] 9.4 Test tag filtering
+- [x] 9.1 Test on macOS with sample notes
+- [x] 9.2 Test file watcher with external edits
+- [x] 9.3 Test search functionality
+- [x] 9.4 Test tag filtering
 - [x] 9.5 Build production .app
-- [ ] 9.6 Test production build
+- [x] 9.6 Test production build

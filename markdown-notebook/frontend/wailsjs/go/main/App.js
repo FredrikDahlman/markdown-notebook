@@ -41,3 +41,11 @@ export function SearchNotes(arg1) {
 export function SetNotesDir(arg1) {
   return window['go']['main']['App']['SetNotesDir'](arg1);
 }
+
+export function StartWatcher() {
+  return window['go']['main']['App']['StartWatcher']();
+}
+
+export function StopWatcher() {
+  return window['go']['main']['App']['StopWatcher']();
+}

@@ -21,3 +21,7 @@ export function SaveNote(arg1:main.Note):Promise<void>;
 export function SearchNotes(arg1:string):Promise<Array<main.Note>>;
 
 export function SetNotesDir(arg1:string):Promise<void>;
+
+export function StartWatcher():Promise<void>;
+
+export function StopWatcher():Promise<void>;
