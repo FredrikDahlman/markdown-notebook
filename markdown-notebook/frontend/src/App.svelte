@@ -181,14 +181,11 @@
     let html = md.render(content);
 
     // Extract mermaid code blocks and replace with placeholders
-    // Try different regex patterns
-    let mermaidRegex = /<pre><code class="language-mermaid[^"]*">(.*?)<\/code><\/pre>/gs;
+    const mermaidRegex = /<pre><code class="language-mermaid[^"]*">(.*?)<\/code><\/pre>/gs;
     let mermaidBlocks = [];
     let counter = 0;
     
-    let match;
-    while ((match = mermaidRegex.exec(html)) !== null) {
-      const code = match[1];
+    html = html.replace(mermaidRegex, (match, code) => {
       const id = `mermaid-${counter++}`;
       // Decode HTML entities
       const decoded = code
@@ -199,9 +196,8 @@
         .replace(/&#39;/g, "'")
         .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)));
       mermaidBlocks.push({ id, code: decoded.trim() });
-      // Replace this match
-      html = html.replace(match[0], `<div class="mermaid-diagram" id="${id}"></div>`);
-    }
+      return `<div class="mermaid-diagram" id="${id}"></div>`;
+    });
 
     previewContainer.innerHTML = html;
     console.log('Mermaid blocks found:', mermaidBlocks);
