@@ -12,6 +12,7 @@
   import { tags as lezerTags } from '@lezer/highlight';
   import MarkdownIt from 'markdown-it';
   import { createHighlighter } from 'shiki';
+  import mermaid from 'mermaid';
 
   let notes = [];
   let currentNote = null;
@@ -27,6 +28,7 @@
   let isDragging = false;
 
   let highlighter = null;
+  
 
   function startDrag(e) {
     isDragging = true;
@@ -54,6 +56,8 @@
       themes: ['light-plus'],
       langs: ['javascript', 'typescript', 'go', 'python', 'rust', 'html', 'css', 'json', 'yaml', 'bash', 'markdown']
     });
+
+    mermaid.initialize({ startOnLoad: false, theme: 'default' });
 
     await loadNotes();
     await loadTags();
@@ -176,24 +180,49 @@
     const content = editorView.state.doc.toString();
     let html = md.render(content);
 
-    // Process code blocks with Shiki
-    const codeBlockRegex = /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g;
-    html = html.replace(codeBlockRegex, (match, lang, code) => {
-      try {
-        const decoded = code
-          .replace(/</g, '<')
-          .replace(/>/g, '>')
-          .replace(/&/g, '&')
-          .replace(/"/g, '"')
-          .replace(/'/g, "'");
-        const highlighted = highlighter.codeToHtml(decoded, { lang: lang || 'text', theme: 'light-plus' });
-        return highlighted;
-      } catch (e) {
-        return match;
-      }
-    });
+    // Extract mermaid code blocks and replace with placeholders
+    // Try different regex patterns
+    let mermaidRegex = /<pre><code class="language-mermaid[^"]*">(.*?)<\/code><\/pre>/gs;
+    let mermaidBlocks = [];
+    let counter = 0;
+    
+    let match;
+    while ((match = mermaidRegex.exec(html)) !== null) {
+      const code = match[1];
+      const id = `mermaid-${counter++}`;
+      // Decode HTML entities
+      const decoded = code
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)));
+      mermaidBlocks.push({ id, code: decoded.trim() });
+      // Replace this match
+      html = html.replace(match[0], `<div class="mermaid-diagram" id="${id}"></div>`);
+    }
 
     previewContainer.innerHTML = html;
+    console.log('Mermaid blocks found:', mermaidBlocks);
+
+    // Render mermaid diagrams after HTML is set
+    for (const { id, code } of mermaidBlocks) {
+      try {
+        const element = document.getElementById(id);
+        if (element && mermaid) {
+          const result = await mermaid.render(`svg-${id}`, code);
+          element.innerHTML = result.svg || result;
+          console.log(`Rendered ${id} successfully`);
+        }
+      } catch (e) {
+        console.error('Mermaid render error:', e);
+        const element = document.getElementById(id);
+        if (element) {
+          element.innerHTML = `<span class="mermaid-error" style="color: red;">Mermaid error: ${e.message}</span>`;
+        }
+      }
+    }
   }
 
   let isSyncing = false;
